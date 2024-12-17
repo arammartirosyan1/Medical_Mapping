@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EFES Insurance Medical Center</title>
+    <!-- Include Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+        }
+
+        header img {
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        h1 {
+            margin: 20px;
+            text-align: center;
+        }
+
+        #map {
+            height: 820px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            #map {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://static.wixstatic.com/media/1d13cb_80c44ec80813494aa81b7fc3cd51c0f2~mv2.png/v1/fill/w_136,h_95,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/efes-logo.png" alt="EFES Logo">
+        <h1>EFES Insurance Medical Center</h1>
+    </header>
+    
+    <div id="map"></div>
+    
+    <!-- Include Leaflet.js JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([40.1792, 44.4991], 13); // Coordinates of Yerevan city center
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // List of market locations (latitude, longitude, name, address)
+        var markets = [
+            { lat: 40.182162, lng: 44.439792, name: "Դալի Մեդ ՍՊԸ", address: "ք. Երևան, Արամի 64 , բն 99, Լեո 1- տարածք 151", phone: "" },
+            { lat: 40.130632, lng: 44.523434, name: "«Կոմֆորտ+» հիվանդասենյակներ Էրեբունի ԲԿ ", address: "ՀՀ, ք․ Երևան, Տիտոգրադյան 14", phone: "" },
+            { lat: 40.130632, lng: 44.523434, name: "«Միքան Էլիտ» ՍՊԸ «Կոմֆորտ» հիվանդասենյակներ", address: "ՀՀ, ք․ Երևան, Տիտոգրադյան 14", phone: "" },
+            { lat: 40.182445, lng: 44.509995, name: "Մոր և Մանկանում սոնոգրաֆիա ", address: "ՀՀ, ք․ Երևան, Մաշտոցի պող. 22", phone: "" },
+            { lat: 40.202692, lng: 44.502979, name: "Արի խոսենք", address: "ք. Երևան, Փափազյան 17", phone: "" },
+            { lat: 40.200184, lng: 44.473910, name: "Աջափնյակ ԲԿ", address: "Աբելյան 8", phone: "" },
+            { lat: 40.219441, lng: 44.564972, name: "Ավանգարդ ԲԿ", address: "ՀՀ, ք․ Երևան, Մարշալ Բաբաջանյան 7/7", phone: "" },
+            { lat: 40.209338, lng: 44.524171, name: "Արաբկիր բժշկական համալիր", address: "ՀՀ, ք․ Երևան, Մամիկոնյանց 30", phone: "" },
+            { lat: 40.209338, lng: 44.524171, name: "Արաբկիր ԲԿ հոգեբանի ծառայություններ", address: "ՀՀ, ք․ Երևան, Մամիկոնյանց 30", phone: "" },
+            { lat: 40.215048, lng: 44.550509, name: "ԱՐԹՄԵԴ բժշկական վերականգնողական կենտրոն", address: "ՀՀ, ք․ Երևան, Ծարավ Աղբյուրի 55ա", phone: "" },
+            { lat: 40.207375, lng: 44.478419, name: "ԱՐՄԵՆԻԱ ՀԲԿ ՓԲԸ", address: "ՀՀ, ք․ Երևան, Մարգարյան 6", phone: "" },
+            { lat: 40.189093, lng: 44.527243, name: "Բեգլարյան բժշկական կենտրոն ՓԲԸ (Պլանի Գլխի ծննդատուն)", address: "ՀՀ, ք․ Երևան, Աբովյան 56", phone: "" },
+            { lat: 40.138892, lng: 44.523209, name: "ԳՐԻԳՈՐ ՆԱՐԵԿԱՑԻ ԲԺՇԿԱԿԱՆ ԿԵՆՏՐՈՆ", address: "ՀՀ, ք․ Երևան, Նոր Արեշ, 22-րդ փողոց, 63/1 շենք", phone: "" },
+            { lat: 40.221645, lng: 44.502566, name: "Դավիդյանց պոլիկլինիկա", address: "ՀՀ,ք. Երևան Դավիթաշեն 4-րդ թաղամաս 33/3", phone: "" },
+            { lat: 40.180874, lng: 44.498910, name: "Դա-Վինչի , Այ ՍԻ Զեթ", address: "ՀՀ, ք․ Երևան, Ձորափի 2", phone: "" },
+            { lat: 40.207534, lng: 44.477683, name: "Դիագնոստիկա  ԲՄ  ԲԲԸ միացել են Պրոմտեստ լաբորատորիաներին", address: "ՀՀ, ք․ Երևան, Մարգարյան 6/1", phone: "" },
+            { lat: 40.209469, lng: 44.510516, name: "Դիալաբ ՍՊԸ", address: "ՀՀ, ք․ Երևան, Մամիկոնյանց փող., 41 շենք", phone: "" },
+            { lat: 40.205343, lng: 44.531645, name: "Երևան Բժշկական կենտրոն", address: "ՀՀ, ք․ Երևան, Հրաչյա Ներսիսյան 7", phone: "" },
+            { lat: 40.201466, lng: 44.490106, name: "Էլիտ-Մեդ ԲԿ ՍՊԸ", address: "ՀՀ, ք․ Երևան, Հակոբ Հակոբյան փող., 3/15 շենք", phone: "" },
+            { lat: 40.189190, lng: 44.507390, name: "Էնդովիժն Կենտրոն", address: "ՀՀ, ք․ Երևան, Դերենիկ Դեմիրճյան փող., 12/14", phone: "" },
+            { lat: 40.130632, lng: 44.523434, name: "Էրեբունի Բժշկական Կենտրոն ՓԲԸ", address: "ՀՀ, ք․ Երևան, Տիտոգրադյան 14", phone: "" },
+            { lat: 40.181852, lng: 44.510732, name: "Թիվ 2 բուժմիավորում  ՓԲԸ", address: "ՀՀ, ք․ Երևան, Արամի 54", phone: "" },
+            { lat: 40.148951, lng: 44.524656, name: "Ժամանակակից Վիրաբուժության Կլինիկիա", address: "ՀՀ, ք․ Երևան, Դավիթ Անհաղթ 14/3", phone: "" },
+            { lat: 40.229935, lng: 44.447176, name: "Իզմիրլյան ԲԿ ՓԲԸ", address: "Ահարոնյան փ թիվ 6", phone: "" },
+            { lat: 40.207609, lng: 44.495712, name: "Ինթրա Հոգեկան Առողջության կենտրոն", address: "ք.Երևան, Սևքարեցի Սաքո 25ա", phone: "" },
+            { lat: 40.169973, lng: 44.434582, name: "Ինֆեկցիոն կլինիկական հիվանդանոց", address: "ՀՀ, ք․ Երևան, Առնո Բաբաջանյան 42", phone: "" },
+            { lat: 40.173839, lng: 44.514011, name: "Լավանդա-Նորմֆարմ ՍՊԸ", address: "Տիգրան Մեծ 17", phone: "" },
+            { lat: 40.206528, lng: 44.509106, name: "ԿՈՒՄՈՒՐՅԱՆ ՊՈԴԻԱՏՐԻԿ ԿԼԻՆԻԿԱ", address: "ՀՀ, ք․ Երևան, Կոմիտասի պող., 42 շենք", phone: "" },
+            { lat: 40.189741, lng: 44.527970, name: "Հայ Ամերիկյան առողջության կենտրոն", address: "ՀՀ, ք․ Երևան, Մխիթար Հերացու 5", phone: "" },
+            { lat: 40.182155, lng: 44.505117, name: "Հելիոս ախտորոշիչ կենտրոն", address: "ՀՀ, ք․ Երևան, Ամիրյան 27/1", phone: "" },
+            { lat: 40.188136, lng: 44.524683, name: "Հերացու անվ. Թիվ 1 հիվանդանոցային համալիր", address: "ՀՀ, ք․ Երևան, Աբովյան 60", phone: "" },
+            { lat: 40.190885, lng: 44.528483, name: "ՀՀ ԱՆ Այրվածքաբանության և Մաշկաբանության ՓԲԸ ", address: "ՀՀ, ք․ Երևան, Դավիթաշեն 25ա", phone: "" },
+            { lat: 40.216804, lng: 44.487088, name: "Հիլֆման հոգեբանի ծառայություններ", address: "ՀՀ, ք․ Երևան, Աբովյան 60", phone: "" },
+            { lat: 40.172467, lng: 44.464505, name: "Մալաթիա ԲԿ/  Նատալի ֆարմ «Աստղիկ» ԲԿ", address: "ՀՀ, ք․ Երևան, Դ. Վարուժանի 28ա", phone: "" },
+            { lat: 40.210337, lng: 44.477144, name: "Մալայանի անվ. Ակնաբուժական կենտրոն ՓԲԸ", address: "ՀՀ, ք․ Երևան, Ֆուչիկի 30", phone: "" },
+            { lat: 40.201466, lng: 44.490106, name: "ՄԵԴ ԱԼՅԱՆՍ ԳՐՈՒՊ / ԷՆԱ կլինիկ", address: "Հակոբ Հակոբյան 3/15", phone: "" },
+            { lat: 40.150302, lng: 44.510399, name: "ՄԵԴԼԱՅՆ Կլինիկ  ՍՊԸ", address: "ՀՀ, ք․ Երևան, Ռոստովյան 17/1", phone: "" },
+            { lat: 40.216804, lng: 44.487088, name: "ՄԵԴԼԱՅՆ Կլինիկ  ՍՊԸ", address: "Դավիթաշեն 25 Ա", phone: "" },
+            { lat: 40.184801, lng: 44.509375, name: "ՄԵԴԼԱՅՆ Կլինիկ  ՍՊԸ", address: "Պուշկինի 43", phone: "" },
+            { lat: 40.155768, lng: 44.476767, name: "ՄԻԲՍ ՍՊԸ / ԿՀՄԻ ԲԱԿ-ՄՌՏ ԿԵՆՏՐՈՆ", address: "ՀՀ, ք․ Երևան, Բագրատունյաց 1", phone: "" },
+            // { lat: 40.183843, lng: 44.499027, name: "Նորք - Մարաշ ԲԿ", address: "ՀՀ, ք․ Երևան, Մուրացան 144", phone: "" },
+            // { lat: 40.181956, lng: 44.520326, name: "Շենգավիթ ԲԿ", address: "ՀՀ, ք․ Երևան, Հրաչյա Ներսիսյան 7", phone: "" },
+            // { lat: 40.204455, lng: 44.531160, name: "Սուրբ Աստվածամայր ԲԿ", address: "ՀՀ, ք․ Երևան, Պարոնյան 21", phone: "" },
+            // { lat: 40.184250, lng: 44.537816, name: "Ֆենիքս Լաբ", address: "ՀՀ, ք․ Երևան, Նալբանդյան 25/14", phone: "" },
+            // { lat: 40.152914, lng: 44.487645, name: "Քանաքեռ-Զեյթուն Ծննդատուն", address: "ՀՀ, ք․ Երևան, Ներսիսյան 12/6", phone: "" },
+            // { lat: 40.209586, lng: 44.536666, name: "Ցիտո Լաբ ՍՊԸ", address: "ՀՀ, ք․ Երևան, Ա.Արմենակյան 108/4", phone: "" },
+            // {lat: 40.209972, lng: 44.520829, name: "Դիագեն պլյուս", address: "ՀՀ, ք․ Երևան, Ն Տիգրանյան 10"},
+            // {lat: 40.184601, lng: 44.564541, name: "Դիագեն պլյուս", address: "Միկոյան 5/2"},
+            // {lat: 40.141891, lng: 44.527791, name: "Դիագեն պլյուս", address: "Էրեբունի 29"},
+            // {lat: 40.224723, lng: 44.500832, name: "Դիագեն պլյուս", address: "Դավիթաշեն 4-րդ թաղամաս, Տիգրան Պետրոսյան փողոց, 47/4"},
+            // {lat: 40.209469, lng: 44.510516, name: "Դիալաբ ՍՊԸ", address: "ՀՀ, ք․ Երևան, Մամիկոնյանց փող., 41 շենք"},
+            // {lat: 40.229935, lng: 44.447176, name: "Իզմիրլյան ԲԿ ՓԲԸ", address: "Ահարոնյան փ թիվ 6"},
+            // {lat: 40.189906, lng: 44.522194, name: "Սրուրեան Ակնաբուժական Կենտրոն, կամ Ցիտադել ակնաբուժական կլինիկա", address: "ՀՀ, ք․ Երևան, Տերյան 105/1 շ․«Ցիտադել» Բիզնես կենտրոն, 2-րդ հարկ, գրաս․202"}
+        ];
+
+
+
+        // Add markers for each market
+        markets.forEach(function(market) {
+            L.marker([market.lat, market.lng]).addTo(map)
+                .bindPopup(`<b>${market.name}</b><br><small>${market.address}</small>`); // Show name and address in popup
+        });
+    </script>
+</body>
+</html>
+
+
+
