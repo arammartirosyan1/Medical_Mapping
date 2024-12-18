@@ -35,6 +35,9 @@
             height: 820px;
             width: 100%;
         }
+        .leaflet-control-attribution {
+            display: none;
+        }
 
         @media (max-width: 768px) {
             #map {
@@ -54,10 +57,15 @@
     <!-- Include Leaflet.js JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Initialize the map
-        var map = L.map('map').setView([40.1792, 44.4991], 13); // Coordinates of Yerevan city center
 
-        // Add OpenStreetMap tiles
+
+
+        var map = L.map('map', {
+            center: [40.1792, 44.4991], // Coordinates of Yerevan city center
+            zoom: 13,
+            attributionControl: false // Disable the default attribution control
+        });
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
